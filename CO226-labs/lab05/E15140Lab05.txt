@@ -1,0 +1,513 @@
+----------------------------------------------------------------------------------
+--	CO226 Database Systems - Lab04 
+--
+--  Author		: Jaliyagoda A.J.N.M. (E/15/140)
+--  Last Update	: 2018/12/12
+--
+----------------------------------------------------------------------------------
+
+-- Lab Task01 --------------------------------------------------------------------
+
+#1. Write a nested query to list the details of the movies directed by a director,
+#	(a) who is also a reviewer. (1 mark)
+	SELECT * FROM movie
+	WHERE movDirector IN (SELECT revName FROM reviewer);
+/*
++-------+----------+---------+---------------+
+| movId | movTitle | movYear | movDirector   |
++-------+----------+---------+---------------+
+|   105 | Titanic  |    2022 | James Cameron |
+|   107 | Avatar   |    2034 | James Cameron |
++-------+----------+---------+---------------+
+*/
+
+#	(b) who is not a reviewer. (1 mark)
+	SELECT * FROM movie
+	WHERE movDirector NOT IN (SELECT revName FROM reviewer WHERE 1);
+/*
++-------+-------------------------+---------+------------------+
+| movId | movTitle                | movYear | movDirector      |
++-------+-------------------------+---------+------------------+
+|   101 | Gone with the Wind      |    1964 | Victor Fleming   |
+|   102 | Star Wars               |    2002 | George Lucas     |
+|   103 | The Sound of Music      |    1990 | Robert Wise      |
+|   104 | E.T.                    |    1982 | Steven Spielberg |
+|   108 | Raiders of the Lost Ark |    1981 | Steven Spielberg |
++-------+-------------------------+---------+------------------+
+*/
+
+#2. Write a nested query to list the details of the movie ratings,
+#	(a) reviewed by the reviewer Sarah Martinez. (1 mark)
+	SELECT * FROM rating
+	WHERE revId IN (SELECT revId FROM reviewer WHERE revName LIKE 'Sarah Martinez');
+/*
++-------+-------+-------+------------+
+| revId | movId | stars | rateDate   |
++-------+-------+-------+------------+
+|   201 |   101 |     2 | 2011-01-22 |
+|   201 |   101 |     4 | 2011-01-27 |
++-------+-------+-------+------------+
+*/
+
+#	(b) not reviewed by the reviewer Sarah Martinez. (1 mark)
+	SELECT * FROM rating
+	WHERE revId NOT IN (SELECT revId FROM reviewer WHERE revName LIKE 'Sarah Martinez');
+/*
++-------+-------+-------+------------+
+| revId | movId | stars | rateDate   |
++-------+-------+-------+------------+
+|   202 |   106 |     4 | NULL       |
+|   203 |   103 |     2 | 2011-01-20 |
+|   203 |   108 |     2 | 2011-01-30 |
+|   203 |   108 |     4 | 2011-01-12 |
+|   204 |   101 |     3 | 2011-01-09 |
+|   205 |   103 |     3 | 2011-01-27 |
+|   205 |   104 |     2 | 2011-01-22 |
+|   205 |   108 |     4 | NULL       |
+|   206 |   106 |     5 | 2011-01-19 |
+|   206 |   107 |     3 | 2011-01-15 |
+|   207 |   107 |     5 | 2011-01-20 |
+|   208 |   104 |     3 | 2011-01-02 |
++-------+-------+-------+------------+
+*/
+
+
+#3. Write a nested query to list the movie ids where each movie has some rating
+#	(a) less than to any of the ratings received by the movie (which has a movie id equal to 103.) (1 mark)
+	SELECT movId, stars FROM rating 
+	WHERE (stars < (SELECT MIN(stars) FROM rating WHERE movId LIKE '103'));
+/*
+Empty set (0.00 sec)
+*/
+
+#	(b) less than or equal to any of the ratings received by the movie which has a movie id equal to 103. (1 mark)
+	SELECT movId, stars FROM rating 
+	WHERE (stars <= (SELECT MAX(stars) FROM rating WHERE movId LIKE '103'));
+/*
++-------+-------+
+| movId | stars |
++-------+-------+
+|   101 |     2 |
+|   101 |     3 |
+|   103 |     2 |
+|   103 |     3 |
+|   104 |     2 |
+|   104 |     3 |
+|   107 |     3 |
+|   108 |     2 |
++-------+-------+
+*/
+
+#	(c) equal to any of the ratings received by the movie which has a movie id equal to 103. (1 mark)
+	SELECT movId, stars FROM rating 
+	WHERE (stars IN (SELECT stars FROM rating WHERE movId LIKE '103'));
+/*
++-------+-------+
+| movId | stars |
++-------+-------+
+|   101 |     2 |
+|   101 |     3 |
+|   103 |     2 |
+|   103 |     3 |
+|   104 |     2 |
+|   104 |     3 |
+|   107 |     3 |
+|   108 |     2 |
++-------+-------+
+*/
+
+#	(d) greater than to any of the ratings received by the movie which has a movie id equal to 103. (1 mark)
+	SELECT movId, stars FROM rating 
+	WHERE (stars > (SELECT MAX(stars) FROM rating WHERE movId LIKE '103'));
+/*
++-------+-------+
+| movId | stars |
++-------+-------+
+|   101 |     4 |
+|   106 |     4 |
+|   106 |     5 |
+|   107 |     5 |
+|   108 |     4 |
+|   108 |     4 |
++-------+-------+
+*/
+
+#	(e) greater than or equal to any of the ratings received by the movie which has a movie id equal to 103. (1 mark)
+	SELECT movId, stars FROM rating 
+	WHERE (stars >= (SELECT MIN(stars) FROM rating WHERE movId LIKE '103'));
+/*
++-------+-------+
+| movId | stars |
++-------+-------+
+|   101 |     2 |
+|   101 |     4 |
+|   101 |     3 |
+|   103 |     2 |
+|   103 |     3 |
+|   104 |     2 |
+|   104 |     3 |
+|   106 |     4 |
+|   106 |     5 |
+|   107 |     3 |
+|   107 |     5 |
+|   108 |     2 |
+|   108 |     4 |
+|   108 |     4 |
++-------+-------+
+*/
+
+#	(f) not equal to any of the ratings received by the movie which has a movie id equal to 103. (1 mark)
+	SELECT movId, stars FROM rating 
+	WHERE (stars NOT IN (SELECT stars FROM rating WHERE movId LIKE '103'));
+/*
++-------+-------+
+| movId | stars |
++-------+-------+
+|   101 |     4 |
+|   106 |     4 |
+|   106 |     5 |
+|   107 |     5 |
+|   108 |     4 |
+|   108 |     4 |
++-------+-------+
+*/
+
+#4. Write a nested query to list the reviewer ids who has the same (movie id, stars) combination on some movie which has a rating date equal to 2011-01-12. (5 marks)
+	SELECT r.revId FROM rating as r
+	WHERE r.stars IN (SELECT stars from rating WHERE rateDate LIKE '2011-01-12') AND
+		r.movId IN (SELECT movId from rating WHERE rateDate LIKE '2011-01-12'); 
+
+/*
++-------+
+| revId |
++-------+
+|   203 |
+|   205 |
++-------+
+*/
+
+#5. Find all the years that have a movie that received a rating of 4 or 5 and sort them in increasing order of the year. Write,
+#	(a) a non-nested query. (5 marks)
+	SELECT DISTINCT DATE_FORMAT(rateDate, '%Y') as `Years` FROM rating
+	WHERE (stars >=4 AND rateDate IS NOT NULL)
+	ORDER BY rateDate ASC;
+/*
++-------+
+| Years |
++-------+
+| 2011  |
++-------+
+*/
+
+#	(b) a non-correlated nested query. (5 marks)
+	SELECT DISTINCT DATE_FORMAT(rateDate, '%Y') as `Years` FROM rating
+	WHERE rateDate IN (SELECT rateDate FROM rating WHERE stars >=4 AND rateDate IS NOT NULL)
+	ORDER BY rateDate ASC;
+/*
++-------+
+| Years |
++-------+
+| 2011  |
++-------+
+*/
+
+#6. Find the titles of all movies that have no ratings. Write,
+#	(a) non-correlated nested query. (5 marks)
+	SELECT movTitle from movie
+	WHERE movId NOT IN (SELECT movId FROM rating WHERE 1);
+/*
++-----------+
+| movTitle  |
++-----------+
+| Star Wars |
+| Titanic   |
++-----------+
+*/
+
+#	(b) a correlated nested query. (5 marks)
+	SELECT m.movTitle from movie as m
+	WHERE m.movId NOT IN (SELECT movId FROM rating WHERE m.movId LIKE movId);
+
+/*
++-----------+
+| movTitle  |
++-----------+
+| Star Wars |
+| Titanic   |
++-----------+
+*/
+
+#7. Some reviewers did not provide a date with their rating. Find the names of all reviewers who have a NULL value for the date. Write,
+#	(a) a non-nested query. (5 marks)
+	SELECT DISTINCT revName FROM reviewer as a, rating as b 
+	WHERE (a.revId = b.revId AND rateDate IS NULL);
+/*
++---------------+
+| revName       |
++---------------+
+| Daniel Lewis  |
+| Chris Jackson |
++---------------+
+*/
+
+#	(b) a non-correlated nested query. (5 marks)
+	SELECT DISTINCT revName FROM reviewer
+	WHERE revId IN (SELECT revId FROM rating WHERE rateDate IS NULL);
+/*
++---------------+
+| revName       |
++---------------+
+| Daniel Lewis  |
+| Chris Jackson |
++---------------+
+*/
+
+#	(c) a correlated nested query. (5 marks)
+	SELECT DISTINCT revName FROM reviewer as r 
+	WHERE (SELECT revId FROM rating WHERE rateDate IS NULL AND r.revId LIKE revId);
+/*
++---------------+
+| revName       |
++---------------+
+| Daniel Lewis  |
+| Chris Jackson |
++---------------+
+*/
+
+#8. For each movie that has some rating, find
+#	(a) the highest stars value received. (2 marks)
+	SELECT DISTINCT movTitle, stars FROM (movie as m JOIN rating as r ON m.movId = r.movId)
+	WHERE r.stars LIKE (SELECT MAX(stars) FROM rating WHERE m.movId LIKE rating.movId)
+	ORDER BY m.movTitle;
+/*
++-------------------------+-------+
+| movTitle                | stars |
++-------------------------+-------+
+| Avatar                  |     5 |
+| E.T.                    |     3 |
+| Gone with the Wind      |     4 |
+| Raiders of the Lost Ark |     4 |
+| Snow White              |     5 |
+| The Sound of Music      |     3 |
++-------------------------+-------+
+*/
+
+#	(b) the least stars value received. (2 marks)
+	SELECT DISTINCT movTitle, stars FROM (movie as m JOIN rating as r ON m.movId = r.movId)
+	WHERE stars LIKE (SELECT MIN(stars) FROM rating WHERE m.movId LIKE rating.movId)
+	ORDER BY m.movTitle;
+/*
++-------------------------+-------+
+| movTitle                | stars |
++-------------------------+-------+
+| Avatar                  |     3 |
+| E.T.                    |     2 |
+| Gone with the Wind      |     2 |
+| Raiders of the Lost Ark |     2 |
+| Snow White              |     4 |
+| The Sound of Music      |     2 |
++-------------------------+-------+
+*/
+
+#	(c) the average value of stars received. (2 marks)
+	SELECT DISTINCT movTitle, AVG(stars) 
+	FROM (movie as m JOIN rating as r ON m.movId = r.movId)
+	GROUP BY r.movId
+	ORDER BY m.movTitle;
+/*
++-------------------------+------------+
+| movTitle                | AVG(stars) |
++-------------------------+------------+
+| Avatar                  |     4.0000 |
+| E.T.                    |     2.5000 |
+| Gone with the Wind      |     3.0000 |
+| Raiders of the Lost Ark |     3.3333 |
+| Snow White              |     4.5000 |
+| The Sound of Music      |     2.5000 |
++-------------------------+------------+
+*/
+
+#	(d) the sum of all the stars received. (2 marks)
+	SELECT DISTINCT movTitle, SUM(stars) 
+	FROM (movie as m JOIN rating as r ON m.movId = r.movId)
+	GROUP BY r.movId
+	ORDER BY m.movTitle;
+/*
++-------------------------+------------+
+| movTitle                | SUM(stars) |
++-------------------------+------------+
+| Avatar                  |          8 |
+| E.T.                    |          5 |
+| Gone with the Wind      |          9 |
+| Raiders of the Lost Ark |         10 |
+| Snow White              |          9 |
+| The Sound of Music      |          5 |
++-------------------------+------------+
+*/
+
+#	(e) the number of times each movie was rated. (2marks)
+	SELECT DISTINCT movTitle, COUNT(stars) 
+	FROM (movie as m JOIN rating as r ON m.movId = r.movId)
+	GROUP BY r.movId
+	ORDER BY m.movTitle;
+/*
++-------------------------+--------------+
+| movTitle                | COUNT(stars) |
++-------------------------+--------------+
+| Avatar                  |            2 |
+| E.T.                    |            2 |
+| Gone with the Wind      |            3 |
+| Raiders of the Lost Ark |            3 |
+| Snow White              |            2 |
+| The Sound of Music      |            2 |
++-------------------------+--------------+
+*/
+
+#	In each of the above cases, return the movie title and asked stars value. Sort the results by movie title.
+
+#9. Find the names of all the reviewers who have contributed three or more ratings. Write,
+#	(a) a non-nested query. (5 marks)
+	SELECT r.revName FROM reviewer as r, rating as s 
+	WHERE r.revId LIKE s.revId
+	GROUP BY r.revId
+	HAVING COUNT(*) >= 3;
+/*
++-----------------+
+| revName         |
++-----------------+
+| Brittany Harris |
+| Chris Jackson   |
++-----------------+
+*/
+
+#	(b) a non-correlated nested query. (5 marks)
+	SELECT r.revName FROM reviewer as r 
+	WHERE (r.revId IN (SELECT revId FROM rating as s GROUP BY s.revId HAVING COUNT(*)>=3));
+/*
++-----------------+
+| revName         |
++-----------------+
+| Brittany Harris |
+| Chris Jackson   |
++-----------------+
+*/
+
+#	(c) a correlated nested query. (5 marks)
+	SELECT r.revName FROM reviewer as r 
+	WHERE (SELECT COUNT(*) FROM rating as s WHERE r.revId LIKE s.revId)>=3;
+/*
++-----------------+
+| revName         |
++-----------------+
+| Brittany Harris |
+| Chris Jackson   |
++-----------------+
+*/
+
+#10. Select movie ids of each movie with its title, reviewer id and stars received.
+	SELECT m.movId, m.movTitle, s.revId, s.stars 
+	FROM movie as m JOIN rating as s ON m.movId=s.movId
+	WHERE 1;
+/*
+
+*/
+
+#11. List the movie titles and average ratings, from the highest-rated to lowest-rated. If two or more movies have the same average rating, list them in alphabetical order. (5 marks)
+	SELECT m.movTitle, AVG(s.stars) 
+	FROM movie as m JOIN rating as s ON m.movId=s.movId
+	GROUP BY m.movId
+	ORDER BY AVG(s.stars) DESC, m.movTitle;
+/*
++-------------------------+--------------+
+| movTitle                | AVG(s.stars) |
++-------------------------+--------------+
+| Snow White              |       4.5000 |
+| Avatar                  |       4.0000 |
+| Raiders of the Lost Ark |       3.3333 |
+| Gone with the Wind      |       3.0000 |
+| E.T.                    |       2.5000 |
+| The Sound of Music      |       2.5000 |
++-------------------------+--------------+
+*/
+
+#12. Remove all ratings where the movie’s year is before 1970 or after 2000. (5 marks)
+	DELETE FROM rating 
+	WHERE movId IN (SELECT movId FROM movie WHERE (movYear < 1970) OR (movYear > 2000));
+	SELECt * FROM rating; 
+/*
++-------+-------+-------+------------+
+| revId | movId | stars | rateDate   |
++-------+-------+-------+------------+
+|   203 |   108 |     2 | 2011-01-30 |
+|   203 |   108 |     4 | 2011-01-12 |
+|   205 |   104 |     2 | 2011-01-22 |
+|   205 |   108 |     4 | NULL       |
+|   208 |   104 |     3 | 2011-01-02 |
++-------+-------+-------+------------+
+*/
+
+#13. Remove all ratings where the rating date is NULL. (5 marks)
+	DELETE FROM rating WHERE rateDate IS NULL;
+	SELECt * FROM rating; 
+/*
++-------+-------+-------+------------+
+| revId | movId | stars | rateDate   |
++-------+-------+-------+------------+
+|   203 |   108 |     2 | 2011-01-30 |
+|   203 |   108 |     4 | 2011-01-12 |
+|   205 |   104 |     2 | 2011-01-22 |
+|   208 |   104 |     3 | 2011-01-02 |
++-------+-------+-------+------------+
+*/
+
+#14. Insert 5-star ratings by James Cameron for all movies in the database. Leave the review date as NULL. (5 marks)
+	INSERT INTO rating  
+		(SELECT 
+			(SELECT revId FROM reviewer WHERE revName LIKE 'James Cameron'), 
+			m.movId, 
+			5, NULL
+		FROM movie as m);
+	SELECT * FROM rating;
+/*
++-------+-------+-------+------------+
+| revId | movId | stars | rateDate   |
++-------+-------+-------+------------+
+|   203 |   108 |     2 | 2011-01-30 |
+|   203 |   108 |     4 | 2011-01-12 |
+|   205 |   104 |     2 | 2011-01-22 |
+|   207 |   101 |     5 | NULL       |
+|   207 |   102 |     5 | NULL       |
+|   207 |   103 |     5 | NULL       |
+|   207 |   104 |     5 | NULL       |
+|   207 |   105 |     5 | NULL       |
+|   207 |   106 |     5 | NULL       |
+|   207 |   107 |     5 | NULL       |
+|   207 |   108 |     5 | NULL       |
+|   208 |   104 |     3 | 2011-01-02 |
++-------+-------+-------+------------+
+*/
+
+#15. For all movies that have an average rating of 4 stars or higher, add 25 to the release year. (Update the existing tuples. Do not insert new tuples). (5 marks)
+	UPDATE movie
+	SET movYear = movYear + 25
+	WHERE movId IN (SELECT movId FROM rating GROUP BY movId HAVING AVG(stars) >=4);
+	SELECT * FROM movie;
+/*
++-------+-------------------------+---------+------------------+
+| movId | movTitle                | movYear | movDirector      |
++-------+-------------------------+---------+------------------+
+|   101 | Gone with the Wind      |    1964 | Victor Fleming   |
+|   102 | Star Wars               |    2002 | George Lucas     |
+|   103 | The Sound of Music      |    1990 | Robert Wise      |
+|   104 | E.T.                    |    1982 | Steven Spielberg |
+|   105 | Titanic                 |    2022 | James Cameron    |
+|   106 | Snow White              |    1962 | NULL             |
+|   107 | Avatar                  |    2034 | James Cameron    |
+|   108 | Raiders of the Lost Ark |    1981 | Steven Spielberg |
++-------+-------------------------+---------+------------------+
+*/
+
+
+
+
+

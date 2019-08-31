@@ -1,0 +1,44 @@
+
+CREATE DATABASE `e15140`;
+USE `e15140`;
+
+CREATE TABLE IF NOT EXISTS `lab03` (
+  `id` int(6) NOT NULL AUTO_INCREMENT,
+  `firstName` varchar(30) NOT NULL,
+  `lastName` varchar(20) NOT NULL,
+  `addr1` text NOT NULL,
+  `addr2` text NOT NULL,
+  `addr3` text NOT NULL,
+  `orderSize` enum('SMALL','MEDIUM', 'LARGE') NOT NULL,
+  `orderColor` enum('RED','PURPLE', 'BLUE', 'GREEN') NOT NULL,
+  `extraCap` tinyint(1) NOT NULL,
+  `extraBand` tinyint(1) NOT NULL,  
+  `comments` text NOT NULL,
+  PRIMARY KEY (`id`)
+); 
+
+
+-- (Optional Fields) ------------------------------------
+--   `orderTime` datetime NOT NULL,
+--   `orderStatus` enum('RECEIVED', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED') NOT NULL,
+-- ------------------------------------------------------
+
+
+INSERT INTO `e15140`.`lab03` (`id`, `firstName`, `lastname`, `addr1`, `addr2`, `addr3`, `orderSize`, `orderColor`, `extraCap`, `extraBand`, `comments`) 
+	VALUES (NULL, 'Nuwan', 'Jaliyagoda', '198/8, Kesselwatta Road', 'Singhapitiya', 'Gampola', 'SMALL', 'RED', '1', '0', 'Please deliver quickly');
+
+
+-- (Few Update Statements) ------------------------------------
+
+UPDATE `e15140`.`lab03` SET `orderSize` = 'MEDIUM' WHERE `lab03`.`id` = 1;
+UPDATE `e15140`.`lab03` SET `comments` = 'New Comment' WHERE `lab03`.`id` = 1;
+
+
+
+-- (Delete Order number 1000) ------------------------------------
+
+DELETE FROM `lab03` WHERE `id` = 1000;
+
+
+
+

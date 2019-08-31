@@ -1,0 +1,198 @@
+----------------------------------------------------------------------------------
+--	CO226 Database Systems - Lab06 
+--
+--	Author		: Jaliyagoda A.J.N.M. (E/15/140)
+--  Last Update	: 2019/01/01
+--
+----------------------------------------------------------------------------------
+
+
+#1. Create a table named Student to insert the above data. Determine a suitable primary key for this table. Populate your table with these data.
+
+DROP DATABASE e15140lab04;
+
+CREATE DATABASE e15140lab04;
+USE e15140lab04;
+
+CREATE TABLE IF NOT EXISTS student (
+  	regNum int(3) NOT NULL,
+  	stuName text NOT NULL,
+  	gpa decimal(3,2) NOT NULL DEFAULT '0.00',
+  	convRegNo int(3),
+  	stuClass varchar(20),
+  	PRIMARY KEY (regNum)
+);
+
+INSERT INTO student VALUES
+(425, 'Sameera', 3.25, NULL, NULL),
+(210, 'Kasun', 3.40, NULL, NULL),
+(201, 'Kalpa', 3.10, NULL, NULL),
+(312, 'Chathura', 3.85, NULL, NULL),
+(473, 'Lakmali', 3.75, NULL, NULL),
+(352, 'Sidath', 3.30, NULL, NULL),
+(111, 'Kumudu', 3.70, NULL, NULL),
+(456, 'Nalin', 3.05, NULL, NULL),
+(324, 'Rohani', 3.70, NULL, NULL),
+(231, 'Chithra', 3.30, NULL, NULL);
+
+#2. Create another table named Convocation to store the details about the registration to the convocation. Table should have fields to hold the Last Name, Address, Age, Registration Number and Convocation Registration Number of each student. The Convocation Registration Number is given when a student registers for the convocation. Determine a suitable primary key and a foreign key for this table.
+
+CREATE TABLE convocation (
+  	lastName text NOT NULL,
+	address text NOT NULL,
+  	age int(2) NOT NULL,
+  	regNum int(3) NOT NULL,
+  	convRegNo int(3),
+  	PRIMARY KEY (regNum),
+  	FOREIGN KEY (regNum) REFERENCES student(regNum)
+);
+
+#3. Create a stored procedure to store the details about the students as one student at a time in the Convocation table when they register for the convocation. (In the registration a unique convocation registration number should be given to each student and at the same time Convocation Registration Number column in the Student table should be updated by inserting relevant registration number for that student.)
+
+delimiter |
+CREATE PROCEDURE convRegister(p_lastName text, p_address text, p_age int, p_regNum int, p_convRegNo int)
+begin 
+	INSERT INTO convocation VALUES
+		(p_lastName, p_address, p_age, p_regNum, p_convRegNo);
+	UPDATE student SET convRegNo = p_convRegNo WHERE regNum LIKE p_regNum;
+end |
+delimiter ;
+
+#4. Perform the registration for Sameera, Chathura, Lakmali, Sidath and Nalin with registration numbers 1, 2, 3, 4 and 5 respectively. Give suitable meaningful values for the rest of the columns for each of these students. Observe the updates made to the Student table.
+
+call convRegister('Sameera', '127/2, Kandy Road, Gampola', 25, 425, 1);
+call convRegister('Chathura', 'No.94, Raja Veediya, Kandy', 26, 312, 2);
+call convRegister('Lakmali', '85/B,Walpola,Minigamuwa,Galagedara', 25, 473, 3);
+call convRegister('Sidath', '127/26,Lake Crescent,Attidiya,Dehiwala', 25, 352, 4);
+call convRegister('Nalin', '128/4, Kahanthota Road, Malabe', 27, 456, 5);
+
+#5. Create a view called Registered to retrieve the details Name, Registration Number, GPA, Convocation Registration Number, Address and Age of those students who have registered for the convocation. Observe the view with the respective data.
+
+CREATE VIEW registered 
+AS SELECT student.stuName, student.regNum, gpa, convocation.convRegNo, address, age 
+FROM student, convocation 
+WHERE student.regNum = convocation.regNum;
+
+/*
++----------+--------+------+-----------+----------------------------------------+-----+
+| stuName  | regNum | gpa  | convRegNo | address                                | age |
++----------+--------+------+-----------+----------------------------------------+-----+
+| Chathura |    312 | 3.85 |         2 | No.94, Raja Veediya, Kandy             |  26 |
+| Sidath   |    352 | 3.30 |         4 | 127/26,Lake Crescent,Attidiya,Dehiwala |  25 |
+| Sameera  |    425 | 3.25 |         1 | 127/2, Kandy Road, Gampola             |  25 |
+| Nalin    |    456 | 3.05 |         5 | 128/4, Kahanthota Road, Malabe         |  27 |
+| Lakmali  |    473 | 3.75 |         3 | 85/B,Walpola,Minigamuwa,Galagedara     |  25 |
++----------+--------+------+-----------+----------------------------------------+-----+
+*/
+
+#6. Create a view called NotRegistered to retrieve the details Name, Registration Number, GPA, Address and Age of those students who have not registered for the convocation. Observe the view with the respective data.
+
+CREATE VIEW notRegistered 
+AS SELECT student.stuName, student.regNum, student.gpa, convocation.address, convocation.age 
+FROM student LEFT OUTER JOIN convocation ON student.convRegNo = convocation.convRegNo
+WHERE  convocation.convRegNo IS NULL;
+
+/*
++---------+--------+------+---------+------+
+| stuName | regNum | gpa  | address | age  |
++---------+--------+------+---------+------+
+| Kumudu  |    111 | 3.70 | NULL    | NULL |
+| Kalpa   |    201 | 3.10 | NULL    | NULL |
+| Kasun   |    210 | 3.40 | NULL    | NULL |
+| Chithra |    231 | 3.30 | NULL    | NULL |
+| Rohani  |    324 | 3.70 | NULL    | NULL |
++---------+--------+------+---------+------+
+*/
+
+#7. Create a table called LateRegistration with the same columns as Convocation table to store the details about the students who do the late registration.
+
+CREATE TABLE lateRegistration (
+  	lastName text NOT NULL,
+	address text NOT NULL,
+  	age int(2) NOT NULL,
+  	regNum int(3) NOT NULL,
+  	convRegNo int(3),
+  	PRIMARY KEY (regNum),
+  	FOREIGN KEY (regNum) REFERENCES student(regNum)
+);
+
+#8. Write a trigger to monitor the state of LateRegistration table, so that after a late registration is done in this table, the Student table should be updated with the relevant Convocation Registration Number for that student.
+
+delimiter |
+CREATE TRIGGER trigLateRegistered
+AFTER INSERT ON lateRegistration
+FOR EACH ROW
+UPDATE student AS stu SET stu.convRegNo = NEW.convRegNo 
+WHERE stu.regNum = NEW.regNums;|
+delimiter ;
+
+#9. Perform the registration for Kasun, Kalpa, Kumudu, Rohani and Chithra with registration numbers 6, 7, 8, 9 and 10 respectively. Give suitable meaningful values for the rest of the columns for each of these students. Observe the updates made to the Student table.
+
+call convRegister('Kasun', '128, Kandy Road, Kadawatha', 25, 210, 6);
+call convRegister('Kalpa', '85/B, Old Kandy Road, Lewella', 24, 201, 7);
+call convRegister('Kumudu', '127/26, Kumara Mawatha, Dehiwala', 26, 111, 8);
+call convRegister('Rohani', '128/4, Kahanthota Road, Malabe', 27, 324, 9);
+call convRegister('Chithra', '198/8, Kesselwatta Road, Gampola', 24, 231, 10);
+
+SELECT * FROM student;
+
+/*
++--------+----------+------+-----------+----------+
+| regNum | stuName  | gpa  | convRegNo | stuClass |
++--------+----------+------+-----------+----------+
+|    111 | Kumudu   | 3.70 |         8 | NULL     |
+|    201 | Kalpa    | 3.10 |         7 | NULL     |
+|    210 | Kasun    | 3.40 |         6 | NULL     |
+|    231 | Chithra  | 3.30 |        10 | NULL     |
+|    312 | Chathura | 3.85 |         2 | NULL     |
+|    324 | Rohani   | 3.70 |         9 | NULL     |
+|    352 | Sidath   | 3.30 |         4 | NULL     |
+|    425 | Sameera  | 3.25 |         1 | NULL     |
+|    456 | Nalin    | 3.05 |         5 | NULL     |
+|    473 | Lakmali  | 3.75 |         3 | NULL     |
++--------+----------+------+-----------+----------+
+*/
+
+#10. Create a stored procedure to and fill the class column as follows.
+#		(a) GPA >=3.7 First class honors
+#		(b) GPA < 3.7 and GPA>=3.3 Second class honors-upper division
+#		(c) GPA < 3.3 and GPA>=2.7 Second class honors-lower division
+#		(d) GPA < 2.7 and GPA>=2.0 Third class honors
+# Call the stored procedure which you created at this step and observe the class values assigned to each student.
+
+delimiter |
+CREATE PROCEDURE assignGPA()
+begin 
+	UPDATE student SET stuClass = 'FirstClass' WHERE (gpa >= 3.7);
+	UPDATE student SET stuClass = 'SecondUpper' WHERE (gpa < 3.7) AND (gpa >= 3.3);
+	UPDATE student SET stuClass = 'SecondLower' WHERE (gpa < 3.3) AND (gpa >= 2.7);
+	UPDATE student SET stuClass = 'ThirdClass' WHERE (gpa < 2.7);
+end |
+delimiter ;
+
+call assignGPA();
+
+SELECT * FROM student;
+
+/*
++--------+----------+------+-----------+-------------+
+| regNum | stuName  | gpa  | convRegNo | stuClass    |
++--------+----------+------+-----------+-------------+
+|    111 | Kumudu   | 3.70 |         8 | FirstClass  |
+|    201 | Kalpa    | 3.10 |         7 | SecondLower |
+|    210 | Kasun    | 3.40 |         6 | SecondUpper |
+|    231 | Chithra  | 3.30 |        10 | SecondUpper |
+|    312 | Chathura | 3.85 |         2 | FirstClass  |
+|    324 | Rohani   | 3.70 |         9 | FirstClass  |
+|    352 | Sidath   | 3.30 |         4 | SecondUpper |
+|    425 | Sameera  | 3.25 |         1 | SecondLower |
+|    456 | Nalin    | 3.05 |         5 | SecondLower |
+|    473 | Lakmali  | 3.75 |         3 | FirstClass  |
++--------+----------+------+-----------+-------------+
+*/
+
+
+
+
+
+

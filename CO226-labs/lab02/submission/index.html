@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Buy T-shirts Online</title>
+</head>
+
+<style type="text/css">
+
+td {padding-bottom: 3px;}
+input{padding: 2px;}
+select{padding: 2px; min-width: 100px;}
+label{font-weight:bold;}
+.myButton{width: 150px;padding: 2px;}
+.tr-label{text-align:center;font-weight:bold;}
+.myTable{border: 1px solid black; margin: 50px;padding: 15px;}
+
+</style>
+
+<body>
+	<div style="width:100%">
+		<center>
+			<table class="myTable">
+				<tr>
+					<td colspan="2">
+						<h1>Buy T-shirts Online</h1>
+						<h3>Fill out the form below and click "Order Now" to order</h3>
+					</td>
+				</tr>
+
+				<form>
+					<tr>
+						<td class="tr-label"><label>Search by order number:</label></td>
+						<td>
+							<input type="text" name="orderNo"> <input class="myButton" type="button" value="Search"></td>
+						</tr>
+					</form>
+
+					<form  action="submit.php" method="post">
+						<tr>
+							<td class="tr-label"><label>Choose your size:</label></td>
+							<td>
+								<input type="radio" name="size" value="Small">Small
+								<input type="radio" name="size" value="Medium">Medium
+								<input type="radio" name="size" value="Large">Large
+							</td>
+						</tr>
+
+
+						<tr>
+							<td class="tr-label"><label>Choose your color:</label></td>
+							<td>
+								<select name="color">
+									<option value="Red">Red</option>
+									<option value="Purple">Purple</option>
+									<option value="Blue">Blue</option>
+									<option value="Green">Green</option>
+								</select>
+							</td>
+						</tr>
+
+						<tr>
+							<td class="tr-label"><label>Extra Items:</label></td>
+							<td>
+								<input type="checkbox" name="extraCap" value="Cap">Cap<br>
+								<input type="checkbox" name="extraWristBand" value="WristBand">Wrist Band<br>
+							</td>
+						</tr>
+
+						<tr>
+							<td class="tr-label"><label>Deliver to:</label></td>
+							<td>
+								<table>
+									<tr>
+										<td class="tr-label"><label>First Name:</label></td>
+										<td><input name="firstName" type="text"></td>
+									</tr>
+									<tr>
+										<td class="tr-label"><label>Last Name:</label></td>
+										<td><input name="lastName" type="text"></td>
+									</tr>
+									<tr>
+										<td class="tr-label"><label>Address1:</label></td>
+										<td><input name="address1" type="text"></td>
+									</tr>
+									<tr>
+										<td class="tr-label"><label>Address2:</label></td>
+										<td><input name="address2" type="text"></td>
+									</tr>
+									<tr>
+										<td class="tr-label"	><label>Address3:</label></td>
+										<td><input name="address3" type="text"></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td class="tr-label"><label>Your Comments:</label></td>
+							<td>
+								<textarea id="comments" name="comments" cols="50" rows="8"></textarea>
+							</td>
+						</tr>
+
+						<tr>
+							<td>&nbsp;</td>
+							<td>
+								<input class="myButton" type="submit" value="Order Now">
+								<!--<input class="myButton" type="reset" value="Delete Order">-->
+							</td>
+						</tr>
+
+					</form>
+				</table>
+			</center>
+		</div>
+	</body>
+	</html>

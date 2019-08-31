@@ -1,0 +1,12 @@
+
+ARM Assembler
+	https://armkeil.blob.core.windows.net/developer/Files/downloads/gnu-rm/7-2018q2/gcc-arm-none-eabi-7-2018-q2-update-win32-sha1.exe
+
+QEMU Simulator - Windows
+	https://qemu.weilnetz.de/w64/
+
+
+
+arm-linux-gnueabi-gcc -Wall example.s -o example
+qemu-arm -L /usr/arm-linux-gnueabi example
+

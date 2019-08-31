@@ -1,0 +1,11 @@
+
+DELIMITER //
+CREATE TRIGGER AttendanceTrigger
+ AFTER INSERT ON attendance
+ FOR EACH ROW
+ BEGIN
+ UPDATE classlist
+ SET attendance = attendance+NEW.attendance
+ WHERE studId = NEW.studId AND courseId IN(SELECT courseId from class WHERE class.id=NEW.classId);
+ END //
+ DELIMITER ;

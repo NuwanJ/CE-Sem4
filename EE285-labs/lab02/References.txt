@@ -1,0 +1,12 @@
+
+
+https://electronics.stackexchange.com/questions/269280/power-supply-12vac-to-dc
+https://www.diodes.com/assets/Datasheets/ds28002.pdf
+https://www.electronics-tutorials.ws/diode/diode_6.html
+https://www.electronics-tutorials.ws/diode/diode-clipping-circuits.html
+https://www.elprocus.com/bridge-rectifier-basics-application/
+https://www.elprocus.com/types-of-clipper-and-clamper-circuits-and-applications/
+
+Simulator
+http://www.partsim.com/simulator/#78487
+

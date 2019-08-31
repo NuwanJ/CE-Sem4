@@ -1,0 +1,51 @@
+
+CREATE DATABASE `e15140`;
+USE `e15140`;
+
+
+CREATE TABLE IF NOT EXISTS `customers`(
+  `id` int(6) NOT NULL AUTO_INCREMENT,
+  `firstName` TEXT NOT NULL,
+  `lastName` TEXT NOT NULL,
+  `addr1` text NOT NULL,
+  `addr2` text NOT NULL,
+  `addr3` text NOT NULL,
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE IF NOT EXISTS `orders` (
+  `id` int(9) NOT NULL AUTO_INCREMENT,
+  `custId` int(6) NOT NULL,
+  `orderSize` enum('SMALL','MEDIUM', 'LARGE') NOT NULL,
+  `orderColor` enum('RED','PURPLE', 'BLUE', 'GREEN') NOT NULL,
+  `extraCap` tinyint(1) NOT NULL,
+  `extraBand` tinyint(1) NOT NULL,  
+  `comments` text NOT NULL,
+  PRIMARY KEY (`id`)
+); 
+
+-- (Optional Fields) ------------------------------------
+--   `orderTime` datetime NOT NULL,
+--   `orderStatus` enum('RECEIVED', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED') NOT NULL,
+-- ------------------------------------------------------
+
+INSERT INTO `e15140`.`customers` (`id`, `firstName`, `lastname`, `addr1`, `addr2`, `addr3`) 
+	VALUES (NULL, 'Nuwan', 'Jaliyagoda', '198/8, Kesselwatta Road', 'Singhapitiya', 'Gampola');
+
+INSERT INTO `e15140`.`orders` (`id`, `custId`, `orderSize`, `orderColor`, `extraCap`, `extraBand`, `comments`) 
+	VALUES (NULL, '1', 'MEDIUM', 'RED', 1, 0, 'Comments are here...');
+
+
+-- (Few Update Statements) ------------------------------------
+
+UPDATE `e15140`.`customers` SET `firstName` = 'Nuwan' WHERE `customers`.`id` = 1;
+UPDATE `e15140`.`orders` SET `orderColor` = 'BLUE' WHERE `orders`.`id` = 1;
+
+
+-- (Delete Order number 1000) ------------------------------------
+
+DELETE FROM `orders` WHERE `id` = 2;
+
+
+
+

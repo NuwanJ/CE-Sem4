@@ -1,0 +1,7 @@
+
+
+
+iverilog -o output.vvp input.v
+vvp output.vvp
+
+gtkwave output.vvp

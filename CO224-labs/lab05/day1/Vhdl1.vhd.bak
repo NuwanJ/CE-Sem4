@@ -1,0 +1,34 @@
+
+
+module testbench;
+
+	reg [3:0] A,B;
+	reg [2:0] C;
+	output [3:0] out;
+	reg [4:0] i;
+	ALU myALU(out, A,B, C);
+	
+	initial begin
+		A <= 8'b00001100;
+		B <= 8'b00000001;
+		C <= 3'b001;
+		
+		$dumpfile("alu.vcd"); 
+		$dumpvars(0, myALU);
+		
+
+		for(i=0; i<15; i=i+1) begin
+			B <= i;
+ 			A <= i/2;
+			#10 $display("Signal=%d (%b)   |   A=%d, B=%d, Out=%d   |   A=%b, B=%b, Out=%b\n", C,C, A,B,out, A,B,out);
+	  	end
+		
+		//#10 $display("A=%b B=%b ===( %b )===> Output=%b \n", A, B, C, out);
+	end
+endmodule
+
+module alu(RESULT, DATA1, DATA2, SELECT);
+
+  
+endmodule
+

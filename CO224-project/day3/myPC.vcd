@@ -1,0 +1,26 @@
+$date
+	Thu Dec 27 22:35:41 2018
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1s
+$end
+$scope module main $end
+$scope module myPC $end
+$var wire 1 ! CLK $end
+$var wire 8 " OUT [7:0] $end
+$var wire 1 # RESET $end
+$var reg 8 $ pc [7:0] $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+#0
+$dumpvars
+bx $
+0#
+bx "
+x!
+$end
+#50
